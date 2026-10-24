@@ -1,0 +1,10 @@
+student-management-system/
+├── .gitignore
+├── README.md
+├── data/
+│   └── students.txt
+└── src/
+    ├── Main.java
+    ├── Student.java
+    ├── Subject.java
+    └── StudentManagementSystem.java
