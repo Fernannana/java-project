@@ -14,25 +14,19 @@ public class Student {
     private int studentID;
     private String firstName;
     private String lastName;
-    
-    // Student grades
-    private int mathGrade;
-    private int scienceGrade;
-    private int historyGrade;
-    private int englishGrade;
- 
- // Constructor
-    public Student(int studentID, String firstName, String lastName,
-                   int mathGrade, int scienceGrade,
-                   int historyGrade, int englishGrade) {
 
-        this.studentID = studentID;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.mathGrade = mathGrade;
-        this.scienceGrade = scienceGrade;
-        this.historyGrade = historyGrade;
-        this.englishGrade = englishGrade;
+
+      // Array of subjects
+    private Subject[] subjects;
+
+  // Constructor
+    public Student(int studentID, String firstName, String lastName) {
+
+        setStudentID(studentID);
+        setFirstName(firstName);
+        setLastName(lastName);
+
+        subjects = new Subject[0];
     }
 
     // Getters
@@ -48,54 +42,62 @@ public class Student {
         return lastName;
     }
 
-    public int getMathGrade() {
-        return mathGrade;
+    public Subject[] getSubjects() {
+        return subjects;
     }
 
-    public int getScienceGrade() {
-        return scienceGrade;
-    }
-
-    public int getHistoryGrade() {
-        return historyGrade;
-    }
-
-    public int getEnglishGrade() {
-        return englishGrade;
-    
-    }
-        
-    // Setters with grade validation
-    public void setMathGrade(int mathGrade) {
-        if (mathGrade >= 0 && mathGrade <= 100) {
-            this.mathGrade = mathGrade;
+    // Setters with basic validation
+    public void setStudentID(int studentID) {
+        if (studentID > 0) {
+            this.studentID = studentID;
         } else {
-            System.out.println("Invalid Math grade. Enter 0-100.");
+            System.out.println("Invalid student ID.");
         }
     }
 
-    public void setScienceGrade(int scienceGrade) {
-        if (scienceGrade >= 0 && scienceGrade <= 100) {
-            this.scienceGrade = scienceGrade;
+    public void setFirstName(String firstName) {
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            this.firstName = firstName;
         } else {
-            System.out.println("Invalid Science grade. Enter 0-100.");
+            System.out.println("First name cannot be empty.");
         }
     }
 
-    public void setHistoryGrade(int historyGrade) {
-        if (historyGrade >= 0 && historyGrade <= 100) {
-            this.historyGrade = historyGrade;
+    public void setLastName(String lastName) {
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            this.lastName = lastName;
         } else {
-            System.out.println("Invalid History grade. Enter 0-100.");
+            System.out.println("Last name cannot be empty.");
         }
     }
 
-    public void setEnglishGrade(int englishGrade) {
-        if (englishGrade >= 0 && englishGrade <= 100) {
-            this.englishGrade = englishGrade;
-        } else {
-            System.out.println("Invalid English grade. Enter 0-100.");
-        }    
-        
-    }    
+    // Add a subject to the student's array
+    public void addSubject(Subject subject) {
+
+        if (subject == null) {
+            System.out.println("Invalid subject.");
+            return;
+        }
+
+        Subject[] newSubjects = new Subject[subjects.length + 1];
+
+        for (int i = 0; i < subjects.length; i++) {
+            newSubjects[i] = subjects[i];
+        }
+
+        newSubjects[subjects.length] = subject;
+
+        subjects = newSubjects;
+    }
+
+    // Get a subject using its array position
+    public Subject getSubject(int index) {
+
+        try {
+            return subjects[index];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Subject position does not exist.");
+            return null;
+        }
+    }
 }
