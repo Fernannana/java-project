@@ -30,12 +30,17 @@ public class Subject {
 
     // Setter for grade
     public void setGrade(int grade) {
-        if (grade >= 0 && grade <= 100) {
-            this.grade = grade;
-        }
+         try {
+            if (grade < 0 || grade > 100) {
+                throw new IllegalArgumentException(
+                    "Grade must be between 0 and 100."
+                );
+            }
 
-        else {
-            System.out.println("Invalid grade. Enter a grade between 0 and 100.");
+            this.grade = grade;
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid grade: " + e.getMessage());
         }
     }
 
