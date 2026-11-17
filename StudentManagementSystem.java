@@ -1,10 +1,12 @@
+package studentmanagementsystem;
+
+import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * The menu actions are stubs for now, fill them in as Student, Subject, file handling, and reports.
- */
+/** Still need to update once requirements 3 and 5 are completed **/
 public class StudentManagementSystem {
 
+    private final ArrayList<Student> students = new ArrayList<>();
     private final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -44,6 +46,9 @@ public class StudentManagementSystem {
                 case 8:
                     loadFromFile();
                     break;
+                case 9;
+                    listAllStudents();
+                    break;
                 case 0:
                     System.out.println("Goodbye!");
                     running = false;
@@ -66,6 +71,7 @@ public class StudentManagementSystem {
         System.out.println("6. Generate reports");
         System.out.println("7. Save records to file");
         System.out.println("8. Load records from file");
+         System.out.println("9. List all students");
         System.out.println("0. Exit");
         System.out.println("=====================================");
     }
@@ -98,38 +104,116 @@ public class StudentManagementSystem {
     // ---- Stubs ----
 
     private void addStudent() {
-        int id = readInt("Student ID: ");
-        String name = readString("Student name: ");
-        // TODO: create a Student object and store it (ArrayList or HashMap)
-        System.out.println("(stub) Would add student " + id + " - " + name);
+        int id = readPositiveInt("Student ID: ");
+        if (findStudent(id) != null) {
+            System.out.println("A student with that ID already exists.");
+            return;
+        }
+         String firstName = readString("First name: ");
+        String lastName = readString("Last name: ");
+
+        try {
+            students.add(new Student(id, firstName, lastName));
+            System.out.println("Student added: " + firstName + " " + lastName);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not add student: " + e.getMessage());
+        }
     }
 
     private void removeStudent() {
         int id = readInt("ID of student to remove: ");
-        // TODO: find and remove the student
-        System.out.println("(stub) Would remove student " + id);
+        Student student = findStudent(id);
+
+        if (student == null) {
+            System.out.println("No student found with ID " + id + ".");
+            return;
+        }
+
+        students.remove(student);
+        System.out.println("Removed " + student.getFirstName() + " " + student.getLastName() + ".");
     }
 
     private void updateStudent() {
         int id = readInt("ID of student to update: ");
-        // TODO: find the student and update their details
-        System.out.println("(stub) Would update student " + id);
+        Student student = findStudent(id);
+
+        if (student == null) {
+            System.out.println("No student found with ID " + id + ".");
+            return;
+        }
+
+        System.out.println("Current name: " + student.getFirstName() + " " + student.getLastName());
+        System.out.println("(Press Enter to keep a value unchanged.)");
+
+        String newFirst = readOptionalString("New first name: ");
+        String newLast = readOptionalString("New last name: ");
+
+        try {
+            if (!newFirst.isEmpty()) {
+                student.setFirstName(newFirst);
+            }
+            if (!newLast.isEmpty()) {
+                student.setLastName(newLast);
+            }
+            System.out.println("Student updated.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not update student: " + e.getMessage());
+        }
     }
 
     private void viewStudentDetails() {
         int id = readInt("ID of student to view: ");
-        // TODO: display the student's info and grades
-        System.out.println("(stub) Would show details for student " + id);
+        Student student = findStudent(id);
+
+        if (student == null) {
+            System.out.println("No student found with ID " + id + ".");
+            return;
+        }
+
+        printStudent(student);
     }
 
     private void addGrade() {
         int id = readInt("Student ID: ");
-        String subject = readString("Subject: ");
-        int grade = readInt("Grade (0-100): ");
-        // TODO: validate 0-100 (Requirement 4) and add a Subject to the student
-        System.out.println("(stub) Would add " + subject + " grade " + grade + " for student " + id);
+        Student student = findStudent(id);
+
+        if (student == null) {
+            System.out.println("No student found with ID " + id + ".");
+            return;
+        }
+
+        String subjectName = readString("Subject name: ");
+        int grade = readGrade("Grade (0-100): ");
+
+        try {
+            Subject existing = findSubject(student, subjectName);
+
+            if (existing != null) {
+                existing.setGrade(grade);
+                System.out.println("Updated " + existing.getName() + " grade to " + grade + ".");
+            } else {
+                student.addSubject(new Subject(subjectName, grade));
+                System.out.println("Added " + subjectName + " grade " + grade + ".");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not save grade: " + e.getMessage());
+        }
     }
 
+    private void listAllStudents() {
+        if (students.isEmpty()) {
+            System.out.println("There are no students yet.");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("--- All Students ---");
+        for (Student s : students) {
+            System.out.println(s.getStudentID() + " - " + s.getFirstName() + " " + s.getLastName());
+        }
+    }
+
+    // -- this seection still need to be updated once req 3 and 5 are done-- //
     private void generateReports() {
         // TODO: average per student, highest/lowest per subject, sorted list
         System.out.println("(stub) Would generate reports");
