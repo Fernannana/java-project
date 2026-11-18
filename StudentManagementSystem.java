@@ -46,7 +46,7 @@ public class StudentManagementSystem {
                 case 8:
                     loadFromFile();
                     break;
-                case 9;
+                case 9:
                     listAllStudents();
                     break;
                 case 0:
