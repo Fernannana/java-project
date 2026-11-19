@@ -7,26 +7,7 @@ import java.util.Scanner;
 
 public class SortedGrades {
 
-    // Average of a student's grades
-    public static double getAverage(Student student) {
-        Subject[] subjects = student.getSubjects();
-
-        if (subjects.length == 0) {
-            return 0;
-        }
-
-        int total = 0;
-        for (Subject subject : subjects) {
-            total += subject.getGrade();
-        }
-        return (double) total / subjects.length;
-    }
-
-    // Compares students by average grade
-    private static Comparator<Student> byAverage() {
-        return Comparator.comparingDouble(SortedGrades::getAverage);
-    }
-
+   // {need average code to include first before running this code}
     // Tie-breaker: last name, then first name (ignoring case)
     private static Comparator<Student> byName() {
         return Comparator
