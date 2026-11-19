@@ -7,6 +7,18 @@ import java.util.Scanner;
 
 public class SortedGrades {
 
+   public static double getAverage(Student student) {
+    Subject[] subjects = student.getSubjects();
+    if (subjects.length == 0) return 0;
+
+    int total = 0;
+
+    for (Subject subject : subjects) {
+        total += subject.getGrade();
+    }
+
+    return (double) total / subjects.length;
+}
    // {need average code to include first before running this code}
     // Tie-breaker: last name, then first name (ignoring case)
     private static Comparator<Student> byName() {
@@ -87,4 +99,29 @@ public class SortedGrades {
         System.out.println();
         printSorted(sorted);
     }
+
+   public static void showAverageReport(List<Student> students) {
+
+    if (students.isEmpty()) {
+        System.out.println("There are no students.");
+        return;
+    }
+
+      //calculates average for each student
+    System.out.println("\n===== Student Average Report =====");
+
+    for (Student student : students) {
+
+        Subject[] subjects = student.getSubjects();
+
+        System.out.print(student.getFirstName() + " "
+                         + student.getLastName() + ": ");
+
+        if (subjects.length == 0) {
+            System.out.println("No grades recorded.");
+        } else {
+            System.out.printf("%.2f%n", getAverage(student));
+        }
+    }
+}
 }
