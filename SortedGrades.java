@@ -19,7 +19,21 @@ public class SortedGrades {
 
     return (double) total / subjects.length;
 }
-   // {need average code to include first before running this code}
+    //calculates average for each student
+    System.out.println("\n===== Student Average Report =====");
+
+    for (Student student : students) {
+
+        Subject[] subjects = student.getSubjects();
+
+        System.out.print(student.getFirstName() + " "
+                         + student.getLastName() + ": ");
+
+        if (subjects.length == 0) {
+            System.out.println("No grades recorded.");
+        } else {
+            System.out.printf("%.2f%n", getAverage(student));
+        }
     // Tie-breaker: last name, then first name (ignoring case)
     private static Comparator<Student> byName() {
         return Comparator
@@ -107,21 +121,7 @@ public class SortedGrades {
         return;
     }
 
-      //calculates average for each student
-    System.out.println("\n===== Student Average Report =====");
-
-    for (Student student : students) {
-
-        Subject[] subjects = student.getSubjects();
-
-        System.out.print(student.getFirstName() + " "
-                         + student.getLastName() + ": ");
-
-        if (subjects.length == 0) {
-            System.out.println("No grades recorded.");
-        } else {
-            System.out.printf("%.2f%n", getAverage(student));
-        }
+     
     }
 }
 }
