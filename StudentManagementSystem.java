@@ -13,6 +13,8 @@ public class StudentManagementSystem {
     private final ArrayList<Student> students = new ArrayList<>();
     private final Scanner scanner = new Scanner(System.in);
 
+    private static final String DATA_FILE = "Data.txt";
+
     public static void main(String[] args) {
         new StudentManagementSystem().run();
     }
