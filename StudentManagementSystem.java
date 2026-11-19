@@ -1,9 +1,13 @@
 package studentmanagementsystem;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/** Still need to update once requirements 3 and 5 are completed **/
 public class StudentManagementSystem {
 
     private final ArrayList<Student> students = new ArrayList<>();
@@ -128,8 +132,6 @@ private int readPositiveInt(String prompt) {
             System.out.println("Input cannot be empty. Please try again.");
         }
     }
-
-    // ---- Stubs ----
 
     private void addStudent() {
         System.out.println();
@@ -257,21 +259,176 @@ private int readPositiveInt(String prompt) {
             System.out.println(s.getStudentID() + " - " + s.getFirstName() + " " + s.getLastName());
         }
     }
-
-    // -- this seection still need to be updated once req 3 and 5 are done-- //
+// ---------- reports -------- // author: Maria Garcia
     private void generateReports() {
-        // TODO: average per student, highest/lowest per subject, sorted list
-        System.out.println("(stub) Would generate reports");
-    }
+        boolean inReports = true;
 
+        while (inReports) {
+            System.out.println();
+            System.out.println("===== GRADE REPORTS =====");
+            System.out.println("1. Average grade for each student");
+            System.out.println("2. Highest and lowest grade for a subject");
+            System.out.println("3. All grades by subject (highest to lowest)");
+            System.out.println("4. Students sorted by average grade");
+            System.out.println("0. Back to main menu");
+
+            int choice = readInt("Choose a report: ");
+
+            if (choice != 0 && students.isEmpty()) {
+                System.out.println("There are no students yet. Please add a student first.");
+                return;
+            }
+
+            switch (choice) {
+                case 1:
+                    SortedGrades.showAverageReport(students);
+                    break;
+                case 2:
+                    String subjectName = readString("Enter the subject name: ");
+                    new SubjectScoreReport(students).displayHighestAndLowest(subjectName);
+                    break;
+                case 3:
+                    new SubjectScoreReport(students).displayHighestToLowest();
+                    break;
+                case 4:
+                    SortedGrades.showReport(students, scanner);
+                    break;
+                case 0:
+                    inReports = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please choose 0-4.");
+            }
+        }
+    }
     private void saveToFile() {
-        // TODO: Requirement 3 - write records to a text file with try-catch
-        System.out.println("(stub) Would save records");
+        if (students.isEmpty()) {
+            System.out.println("There are no students to save.");
+            return;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
+
+            for (Student student : students) {
+                StringBuilder line = new StringBuilder();
+                line.append(student.getStudentID()).append("\t")
+                    .append(student.getFirstName()).append("\t")
+                    .append(student.getLastName());
+
+                for (Subject subject : student.getSubjects()) {
+                    line.append("\t")
+                        .append(subject.getName()).append(":").append(subject.getGrade());
+                }
+
+                writer.write(line.toString());
+                writer.newLine();
+            }
+
+            System.out.println("Saved " + students.size() + " student(s) to " + DATA_FILE + ".");
+
+        } catch (IOException e) {
+            System.out.println("Could not save to " + DATA_FILE + ": " + e.getMessage());
+        }
     }
 
     private void loadFromFile() {
-        // TODO: Requirement 3 - read records from a text file with try-catch
-        System.out.println("(stub) Would load records");
+        // Read into a temporary list first, so a problem never wipes the current records
+        ArrayList<Student> loaded = new ArrayList<>();
+        int skipped = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(DATA_FILE))) {
+
+            String line;
+            int lineNumber = 0;
+
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                Student student = parseStudent(line, lineNumber, loaded);
+                if (student == null) {
+                    skipped++;
+                } else {
+                    loaded.add(student);
+                }
+            }
+
+        } catch (java.io.FileNotFoundException e) {
+            System.out.println(DATA_FILE + " was not found. Save records first (option 7).");
+            return;
+        } catch (IOException e) {
+            System.out.println("Could not read " + DATA_FILE + ": " + e.getMessage());
+            return;
+        }
+
+        students.clear();
+        students.addAll(loaded);
+
+        System.out.println("Loaded " + loaded.size() + " student(s) from " + DATA_FILE + ".");
+        if (skipped > 0) {
+            System.out.println(skipped + " line(s) were skipped because of invalid data.");
+        }
+    }
+
+    /** Turns one line of the file into a Student, or returns null (with a message) if invalid. */
+    private Student parseStudent(String line, int lineNumber, ArrayList<Student> alreadyLoaded) {
+        String[] parts = line.split("\t");
+
+        if (parts.length < 3) {
+            System.out.println("Line " + lineNumber + " skipped: not enough fields.");
+            return null;
+        }
+
+        try {
+            int id = Integer.parseInt(parts[0].trim());
+            String firstName = parts[1].trim();
+            String lastName = parts[2].trim();
+
+            if (id <= 0 || firstName.isEmpty() || lastName.isEmpty()) {
+                System.out.println("Line " + lineNumber + " skipped: invalid ID or name.");
+                return null;
+            }
+
+            for (Student existing : alreadyLoaded) {
+                if (existing.getStudentID() == id) {
+                    System.out.println("Line " + lineNumber + " skipped: duplicate ID " + id + ".");
+                    return null;
+                }
+            }
+
+            Student student = new Student(id, firstName, lastName);
+
+            // Remaining fields are Subject:Grade
+            for (int i = 3; i < parts.length; i++) {
+                String field = parts[i].trim();
+                int colon = field.lastIndexOf(':');
+
+                if (colon <= 0) {
+                    System.out.println("Line " + lineNumber + " skipped: bad grade entry '" + field + "'.");
+                    return null;
+                }
+
+                String subjectName = field.substring(0, colon).trim();
+                int grade = Integer.parseInt(field.substring(colon + 1).trim());
+
+                if (grade < 0 || grade > 100) {
+                    System.out.println("Line " + lineNumber + " skipped: grade " + grade
+                            + " is not between 0 and 100.");
+                    return null;
+                }
+
+                student.addSubject(new Subject(subjectName, grade));
+            }
+
+            return student;
+
+        } catch (NumberFormatException e) {
+            System.out.println("Line " + lineNumber + " skipped: a number could not be read.");
+            return null;
+        }
     }
 
     // Find a student using their ID number
@@ -282,19 +439,6 @@ private Student findStudent(int id) {
         }
     }
     return null;
-}
-
-// Read a positive number
-private int readPositiveInt(String prompt) {
-    while (true) {
-        int number = readInt(prompt);
-
-        if (number > 0) {
-            return number;
-        }
-
-        System.out.println("Please enter a number greater than 0.");
-    }
 }
 
 // Read text that can be left blank
