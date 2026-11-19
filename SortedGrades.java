@@ -20,20 +20,26 @@ public class SortedGrades {
     return (double) total / subjects.length;
 }
     //calculates average for each student
-    System.out.println("\n===== Student Average Report =====");
+    public static void showAverageReport(List<Student> students) {
+    if (students.isEmpty()) {
+        System.out.println("There are no students.");
+        return;
+    }
+
+    System.out.println();
+    System.out.println("===== Student Average Report =====");
 
     for (Student student : students) {
-
-        Subject[] subjects = student.getSubjects();
-
         System.out.print(student.getFirstName() + " "
-                         + student.getLastName() + ": ");
+                + student.getLastName() + ": ");
 
-        if (subjects.length == 0) {
+        if (student.getSubjects().length == 0) {
             System.out.println("No grades recorded.");
         } else {
             System.out.printf("%.2f%n", getAverage(student));
         }
+    }
+}
     // Tie-breaker: last name, then first name (ignoring case)
     private static Comparator<Student> byName() {
         return Comparator
