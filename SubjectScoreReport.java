@@ -81,6 +81,55 @@ public class SubjectScoreReport {
         }
     }
 
+    // Display the highest and lowest grade for a named subject
+    public void displayHighestAndLowest(String subjectName) {
+        if (students.isEmpty()) {
+            System.out.println("No students available for the report.");
+            return;
+        }
+
+        if (subjectName == null || subjectName.trim().isEmpty()) {
+            System.out.println("Please enter a valid subject name.");
+            return;
+        }
+
+        ArrayList<Student> subjectStudents = new ArrayList<>();
+        for (Student student : students) {
+            if (findSubject(student, subjectName) != null) {
+                subjectStudents.add(student);
+            }
+        }
+
+        if (subjectStudents.isEmpty()) {
+            System.out.println("No grades recorded for " + subjectName + ".");
+            return;
+        }
+
+        Student highest = subjectStudents.get(0);
+        Student lowest = subjectStudents.get(0);
+        int highestGrade = findSubject(highest, subjectName).getGrade();
+        int lowestGrade = highestGrade;
+
+        for (Student student : subjectStudents) {
+            int grade = findSubject(student, subjectName).getGrade();
+            if (grade > highestGrade) {
+                highestGrade = grade;
+                highest = student;
+            }
+            if (grade < lowestGrade) {
+                lowestGrade = grade;
+                lowest = student;
+            }
+        }
+
+        System.out.println();
+        System.out.println("===== " + subjectName + " Highest and Lowest =====");
+        System.out.println("Highest: " + highest.getFirstName() + " "
+                + highest.getLastName() + " - " + highestGrade);
+        System.out.println("Lowest: " + lowest.getFirstName() + " "
+                + lowest.getLastName() + " - " + lowestGrade);
+    }
+
     // Find a subject for a student
     private Subject findSubject(Student student, String subjectName) {
 
