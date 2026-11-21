@@ -47,6 +47,11 @@ public class SortedGrades {
                 .thenComparing(Student::getFirstName, String.CASE_INSENSITIVE_ORDER);
     }
 
+    // Average score comparison
+    private static Comparator<Student> byAverage() {
+        return Comparator.comparingDouble(SortedGrades::getAverage);
+    }
+
     // 1. Lowest to highest
     public static List<Student> sortAscending(List<Student> students) {
         List<Student> sorted = new ArrayList<>(students);
@@ -120,14 +125,4 @@ public class SortedGrades {
         printSorted(sorted);
     }
 
-   public static void showAverageReport(List<Student> students) {
-
-    if (students.isEmpty()) {
-        System.out.println("There are no students.");
-        return;
-    }
-
-     
-    }
-}
 }
