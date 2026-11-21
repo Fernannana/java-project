@@ -92,5 +92,45 @@ public class SubjectScoreReport {
         }
 
         return null;
-    }    
+    }
+
+    // Display the highest and lowest grade for one subject
+    public void displayHighestAndLowest(String subjectName) {
+
+        int highest = -1;
+        int lowest = 101;
+
+        String highestStudent = "";
+        String lowestStudent = "";
+
+        for (Student student : students) {
+
+            Subject subject = findSubject(student, subjectName);
+
+            if (subject != null) {
+
+                int grade = subject.getGrade();
+
+                if (grade > highest) {
+                    highest = grade;
+                    highestStudent = student.getFirstName() + " " + student.getLastName();
+                }
+
+                if (grade < lowest) {
+                    lowest = grade;
+                    lowestStudent = student.getFirstName() + " " + student.getLastName();
+                }
+            }
+        }
+
+        System.out.println();
+        System.out.println("===== " + subjectName + " Highest and Lowest Grades =====");
+
+        if (highest == -1) {
+            System.out.println("No grades found for " + subjectName + ".");
+        } else {
+            System.out.println("Highest grade: " + highest + " - " + highestStudent);
+            System.out.println("Lowest grade: " + lowest + " - " + lowestStudent);
+        }
+    }
 }
